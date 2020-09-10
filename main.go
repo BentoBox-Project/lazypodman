@@ -1,39 +1,54 @@
 package main
 
 import (
-	"context"
+	"flag"
 	"fmt"
+	"log"
 	"os"
 
-	"github.com/containers/libpod/pkg/bindings"
-	"github.com/containers/libpod/pkg/bindings/containers"
+	"github.com/danvergara/lazypodman/pkg/app"
+	"github.com/danvergara/lazypodman/pkg/config"
 )
 
+const (
+	appVersion   = "0.1.0"
+	versionUsage = "Prints current version"
+	fileUsage    = "Specify a alternate compose file"
+)
+
+var (
+	version     bool
+	composeFile string
+)
+
+func init() {
+	flag.BoolVar(&version, "version", false, versionUsage)
+	flag.BoolVar(&version, "v", false, versionUsage+" (shorthand)")
+	flag.StringVar(&composeFile, "file", "", fileUsage)
+	flag.StringVar(&composeFile, "f", "", fileUsage+" (shorthand)")
+}
+
 func main() {
-	fmt.Println("Welcome to the Podman Go bindings tutorial")
 
-	// Get Podman socket location
-	sockDir := os.Getenv("XDG_RUNTIME_DIR")
-	socket := "unix:" + sockDir + "/podman/podman.sock"
+	flag.Parse()
 
-	// Connect to Podman socket
-	connText, err := bindings.NewConnection(context.Background(), socket)
+	if version {
+		fmt.Println(appVersion)
+		os.Exit(0)
+	}
+
+	projectDir, err := os.Getwd()
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err.Error())
 	}
 
-	// Container list
-	var latestContainers = 3
-	containerLatestList, err := containers.List(connText, nil, nil, &latestContainers, nil, nil, nil)
+	appConfig, err := config.NewConfig("lazypodman", composeFile, projectDir)
+
+	if app, err := app.NewApp(appConfig); err == nil {
+		err = app.Run()
+	}
+
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(fmt.Sprintf("%s\n", "something happend"))
 	}
-
-	for _, container := range containerLatestList {
-		fmt.Printf("container: %s\n", container.Names[0])
-	}
-
-	// fmt.Printf("Latest container is %s\n", containerLatestList[0].Names[0])
 }
