@@ -8,6 +8,7 @@ import (
 
 	"github.com/danvergara/lazypodman/pkg/app"
 	"github.com/danvergara/lazypodman/pkg/config"
+	"github.com/go-errors/errors"
 )
 
 const (
@@ -42,13 +43,17 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	appConfig, err := config.NewConfig("lazypodman", composeFile, projectDir)
+	appConfig, err := config.NewConfig("lazypodman", composeFile, projectDir, "0.1.0")
 
-	if app, err := app.NewApp(appConfig); err == nil {
+	app, err := app.NewApp(appConfig)
+	if err == nil {
 		err = app.Run()
 	}
 
 	if err != nil {
-		log.Fatal(fmt.Sprintf("%s\n", "something happend"))
+		newErr := errors.Wrap(err, 0)
+		stackTrace := newErr.ErrorStack()
+		app.Log.Error(stackTrace)
+		log.Fatal(fmt.Sprintf("%s\n", err.Error()))
 	}
 }
