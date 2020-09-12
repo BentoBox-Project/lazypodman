@@ -43,6 +43,10 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
+	if composeFile == "" {
+		composeFile = "docker-compose.yml"
+	}
+
 	appConfig, err := config.NewConfig("lazypodman", composeFile, projectDir, "0.1.0")
 
 	app, err := app.NewApp(appConfig)
