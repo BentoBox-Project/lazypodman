@@ -1,13 +1,10 @@
 package app
 
 import (
-	"context"
 	"fmt"
 	"os"
 
-	"github.com/containers/libpod/v2/pkg/bindings"
-	"github.com/containers/libpod/v2/pkg/bindings/containers"
-	"github.com/containers/libpod/v2/pkg/bindings/pods"
+	"github.com/danvergara/lazypodman/pkg/compose"
 	"github.com/danvergara/lazypodman/pkg/config"
 	"github.com/danvergara/lazypodman/pkg/logger"
 	"github.com/sirupsen/logrus"
@@ -31,32 +28,14 @@ func NewApp(config *config.Config) (*App, error) {
 // Run the application
 func (app *App) Run() error {
 	// Get Podman socket location
-	sockDir := os.Getenv("XDG_RUNTIME_DIR")
-	socket := "unix:" + sockDir + "/podman/podman.sock"
 
-	// Connect to Podman socket
-	connText, err := bindings.NewConnection(context.Background(), socket)
-	if err != nil {
-		return err
-	}
-
-	podsList, err := pods.List(connText, nil)
-	if err != nil {
-		return err
-	}
-
-	for _, pod := range podsList {
-		fmt.Printf("Pod ID: %s Name: %s\n", pod.Id, pod.Name)
-		fmt.Printf("Containers of %s: \n", pod.Name)
-		for _, ctr := range pod.Containers {
-			ctrData, err := containers.Inspect(connText, ctr.Id, nil)
-			if err != nil {
-				return err
-			}
-
-			fmt.Printf("Specs: %v\n", ctrData)
+	if compose.FileExists(app.Config.UserConfig.ComposeFile) {
+		services, err := compose.Services(app.Config.UserConfig.ComposeFile)
+		if err != nil {
+			app.Log.Error(err)
+			os.Exit(1)
 		}
+		fmt.Printf("%v\n", services)
 	}
-
 	return nil
 }

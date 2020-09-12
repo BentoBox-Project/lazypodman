@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+  web:
+    image: wordpress:latest 
+    ports:
+      - "8080:80"
+    environment:
+      - WORDPRESS_DB_NAME=wp
+      - WORDPRESS_DB_HOST=db
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_PASSWORD=w0rdpr3ss
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=myrootpass
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=w0rdpr3ss
+      - MYSQL_DATABASE=wp
