@@ -1,10 +1,13 @@
 package config
 
+import "github.com/danvergara/lazypodman/pkg/gui"
+
 // Config struct
 type Config struct {
 	Debug      bool
-	Name       string
+	Gui        *gui.Gui
 	ProjectDir string
+	Name       string
 	UserConfig *UserConfig
 	Version    string
 }
@@ -22,6 +25,7 @@ func NewConfig(name, composeFile, projectDir, version string) (*Config, error) {
 		UserConfig: &UserConfig{
 			ComposeFile: composeFile,
 		},
+		Gui:     gui.NewGui(),
 		Version: version,
 	}
 

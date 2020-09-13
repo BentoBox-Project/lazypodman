@@ -1,10 +1,6 @@
 package app
 
 import (
-	"fmt"
-	"os"
-
-	"github.com/danvergara/lazypodman/pkg/compose"
 	"github.com/danvergara/lazypodman/pkg/config"
 	"github.com/danvergara/lazypodman/pkg/logger"
 	"github.com/sirupsen/logrus"
@@ -27,15 +23,9 @@ func NewApp(config *config.Config) (*App, error) {
 
 // Run the application
 func (app *App) Run() error {
-	// Get Podman socket location
-
-	if compose.FileExists(app.Config.UserConfig.ComposeFile) {
-		services, err := compose.Services(app.Config.UserConfig.ComposeFile)
-		if err != nil {
-			app.Log.Error(err)
-			os.Exit(1)
-		}
-		fmt.Printf("%v\n", services)
+	if err := app.Config.Gui.Run(); err != nil {
+		return err
 	}
+
 	return nil
 }
