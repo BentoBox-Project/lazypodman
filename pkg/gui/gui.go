@@ -3,8 +3,11 @@ package gui
 import (
 	"time"
 
+	"github.com/danvergara/lazypodman/pkg/podman"
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
+	"github.com/sirupsen/logrus"
+	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
 
 // Controller is the interface used to represent the Gui objects
@@ -15,21 +18,25 @@ type Controller interface {
 
 // Gui wrapes the gocui object which handles rendering and events
 type Gui struct {
-	Grid     *ui.Grid
-	Pods     *widgets.List
-	Services *widgets.List
-	Images   *widgets.List
-	Volumes  *widgets.List
+	Grid          *ui.Grid
+	PodmanBinding *podman.Podman
+	Pods          *widgets.List
+	Services      *widgets.List
+	Images        *widgets.List
+	Volumes       *widgets.List
 }
 
 // NewGui returns a new Gui object
-func NewGui() *Gui {
+func NewGui(composeFile string) *Gui {
 	gui := &Gui{
 		Grid:     ui.NewGrid(),
 		Pods:     widgets.NewList(),
 		Services: widgets.NewList(),
 		Images:   widgets.NewList(),
 		Volumes:  widgets.NewList(),
+		PodmanBinding: &podman.Podman{
+			ComposeFile: composeFile,
+		},
 	}
 
 	gui.initUI()
@@ -51,9 +58,10 @@ func (g *Gui) initUI() {
 			ui.NewRow(1.0/4, g.Volumes),
 		),
 	)
+	width, _ := terminal.Width()
+	height, _ := terminal.Height()
 
-	termWidth, termHeight := ui.TerminalDimensions()
-	g.Grid.SetRect(0, 0, termWidth, termHeight)
+	g.Grid.SetRect(0, 0, int(width), int(height))
 }
 
 // render display the Grid on the terminal
