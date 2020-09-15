@@ -66,6 +66,38 @@ func (g *Gui) initUI() {
 
 // render display the Grid on the terminal
 func (g *Gui) render() {
+	conn, err := podman.APIConn()
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	podNames, err := g.PodmanBinding.Pods(conn)
+
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	cNames, err := g.PodmanBinding.Containers(conn)
+
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	imageNames, err := g.PodmanBinding.Images(conn)
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	vNames, err := g.PodmanBinding.Volumes(conn)
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	g.Pods.Rows = podNames
+	g.Services.Rows = cNames
+	g.Images.Rows = imageNames
+	g.Volumes.Rows = vNames
+
 	ui.Render(g.Grid)
 }
 
