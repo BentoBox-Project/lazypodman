@@ -3,18 +3,16 @@ package gui
 import (
 	"time"
 
+	"github.com/containers/libpod/v2/pkg/bindings/containers"
+	"github.com/containers/libpod/v2/pkg/bindings/images"
+	"github.com/containers/libpod/v2/pkg/bindings/pods"
+	"github.com/containers/libpod/v2/pkg/bindings/volumes"
 	"github.com/danvergara/lazypodman/pkg/podman"
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
 	"github.com/sirupsen/logrus"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
-
-// Controller is the interface used to represent the Gui objects
-type Controller interface {
-	Render()
-	Resize()
-}
 
 // Gui wrapes the gocui object which handles rendering and events
 type Gui struct {
@@ -66,29 +64,29 @@ func (g *Gui) initUI() {
 
 // render display the Grid on the terminal
 func (g *Gui) render() {
-	conn, err := podman.APIConn()
+	ctx, err := podman.APIConn()
 	if err != nil {
 		logrus.Error(err)
 	}
 
-	podNames, err := g.PodmanBinding.Pods(conn)
-
-	if err != nil {
-		logrus.Error(err)
-	}
-
-	cNames, err := g.PodmanBinding.Containers(conn)
+	podNames, err := g.PodmanBinding.Pods(ctx, pods.List)
 
 	if err != nil {
 		logrus.Error(err)
 	}
 
-	imageNames, err := g.PodmanBinding.Images(conn)
+	cNames, err := g.PodmanBinding.Containers(ctx, containers.List)
+
 	if err != nil {
 		logrus.Error(err)
 	}
 
-	vNames, err := g.PodmanBinding.Volumes(conn)
+	imageNames, err := g.PodmanBinding.Images(ctx, images.List)
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	vNames, err := g.PodmanBinding.Volumes(ctx, volumes.List)
 	if err != nil {
 		logrus.Error(err)
 	}
