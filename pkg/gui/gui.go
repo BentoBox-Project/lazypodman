@@ -109,6 +109,7 @@ func (g *Gui) Run() error {
 	defer ui.Close()
 
 	ev := ui.PollEvents()
+	//lint:ignore SA1015 we want to hide the actual implementation from the main package
 	tick := time.Tick(time.Second)
 
 	for {

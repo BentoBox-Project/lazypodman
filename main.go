@@ -49,6 +49,10 @@ func main() {
 
 	appConfig, err := config.NewConfig("lazypodman", composeFile, projectDir, "0.1.0")
 
+	if err != nil {
+		log.Fatal(fmt.Sprintf("%s\n", err.Error()))
+	}
+
 	app, err := app.NewApp(appConfig)
 	if err == nil {
 		err = app.Run()
