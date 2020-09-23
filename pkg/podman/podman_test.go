@@ -89,9 +89,9 @@ func mockEmptyVolumelist(ctx context.Context, filters map[string][]string) ([]*e
 func TestPodList(t *testing.T) {
 	ctx := context.Background()
 
-	podmanObject := Podman{}
+	podmanObj := Podman{}
 
-	pods, err := podmanObject.Pods(ctx, mockPodList)
+	pods, err := podmanObj.Pods(ctx, mockPodList)
 	assert.NoError(t, err)
 	assert.Equal(t, "application_web", pods[0])
 }
@@ -99,9 +99,9 @@ func TestPodList(t *testing.T) {
 func TestEmptyPodList(t *testing.T) {
 	ctx := context.Background()
 
-	podmanObject := Podman{}
+	podmanObj := Podman{}
 
-	pods, err := podmanObject.Pods(ctx, mockEmptyPodList)
+	pods, err := podmanObj.Pods(ctx, mockEmptyPodList)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 0, len(pods))
@@ -110,9 +110,9 @@ func TestEmptyPodList(t *testing.T) {
 func TestContainerList(t *testing.T) {
 	ctx := context.Background()
 
-	podmanObject := Podman{}
+	podmanObj := Podman{}
 
-	containers, err := podmanObject.Containers(ctx, mockContainersList)
+	containers, err := podmanObj.Containers(ctx, mockContainersList)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(containers))
@@ -122,9 +122,9 @@ func TestContainerList(t *testing.T) {
 func TestEmptyContainersList(t *testing.T) {
 	ctx := context.Background()
 
-	podmanObject := Podman{}
+	podmanObj := Podman{}
 
-	containers, err := podmanObject.Containers(ctx, mockEmptyContainersList)
+	containers, err := podmanObj.Containers(ctx, mockEmptyContainersList)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 0, len(containers))
@@ -133,9 +133,9 @@ func TestEmptyContainersList(t *testing.T) {
 func TestImageList(t *testing.T) {
 	ctx := context.Background()
 
-	podmanObject := Podman{}
+	podmanObj := Podman{}
 
-	images, err := podmanObject.Images(ctx, mockImagesList)
+	images, err := podmanObj.Images(ctx, mockImagesList)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 3, len(images))
@@ -145,9 +145,9 @@ func TestImageList(t *testing.T) {
 func TestEmptyImageList(t *testing.T) {
 	ctx := context.Background()
 
-	podmanObject := Podman{}
+	podmanObj := Podman{}
 
-	images, err := podmanObject.Images(ctx, mockEmptyImagesList)
+	images, err := podmanObj.Images(ctx, mockEmptyImagesList)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 0, len(images))
@@ -156,9 +156,9 @@ func TestEmptyImageList(t *testing.T) {
 func TestVolumeList(t *testing.T) {
 	ctx := context.Background()
 
-	podmanObject := Podman{}
+	podmanObj := Podman{}
 
-	volumes, err := podmanObject.Volumes(ctx, mockVolumeList)
+	volumes, err := podmanObj.Volumes(ctx, mockVolumeList)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(volumes))
@@ -168,9 +168,9 @@ func TestVolumeList(t *testing.T) {
 func TestEmptyVolumeList(t *testing.T) {
 	ctx := context.Background()
 
-	podmanObject := Podman{}
+	podmanObj := Podman{}
 
-	volumes, err := podmanObject.Volumes(ctx, mockEmptyVolumelist)
+	volumes, err := podmanObj.Volumes(ctx, mockEmptyVolumelist)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 0, len(volumes))
