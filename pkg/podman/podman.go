@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/containers/libpod/v2/pkg/bindings"
-	"github.com/containers/libpod/v2/pkg/domain/entities"
 )
 
 // Podman struct
@@ -13,20 +12,6 @@ type Podman struct {
 	// the name of the docker-compose file, if any
 	ComposeFile string
 }
-
-// Internal functions types used to mock the real ones from podman/bindings package
-
-// PodsList is the function type with the same signature of pods.List
-type PodsList func(ctx context.Context, filters map[string][]string) ([]*entities.ListPodsReport, error)
-
-// ContainersList is the function type with the same signature of containers.List
-type ContainersList func(ctx context.Context, filters map[string][]string, all *bool, last *int, pod, size, sync *bool) ([]entities.ListContainer, error)
-
-// ImagesList is the function type with the same signature of images.List
-type ImagesList func(ctx context.Context, all *bool, filters map[string][]string) ([]*entities.ImageSummary, error)
-
-// VolumesList is the function type with the same signature of volumes.List
-type VolumesList func(ctx context.Context, filters map[string][]string) ([]*entities.VolumeListReport, error)
 
 // APIConn returns an Podman V2 API connection as a context.Context
 func APIConn() (context.Context, error) {
@@ -44,8 +29,8 @@ func APIConn() (context.Context, error) {
 }
 
 // Pods returns a slice of strings with the name of the active pods
-func (p *Podman) Pods(ctx context.Context, plist PodsList) ([]string, error) {
-	podList, err := plist(ctx, nil)
+func (p *Podman) Pods(ctx context.Context, pods Pods) ([]string, error) {
+	podList, err := pods(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -60,10 +45,10 @@ func (p *Podman) Pods(ctx context.Context, plist PodsList) ([]string, error) {
 }
 
 // Containers retuns a slice of strings with the names of the active containers or those listted on a docker-compose file
-func (p *Podman) Containers(ctx context.Context, clist ContainersList) ([]string, error) {
+func (p *Podman) Containers(ctx context.Context, crs Containers) ([]string, error) {
 	var latestContainers = 10
 
-	containerList, err := clist(ctx, nil, nil, &latestContainers, nil, nil, nil)
+	containerList, err := crs(ctx, nil, nil, &latestContainers, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -77,9 +62,9 @@ func (p *Podman) Containers(ctx context.Context, clist ContainersList) ([]string
 }
 
 // Images return the list of the current podman images in the system
-func (p *Podman) Images(ctx context.Context, iList ImagesList) ([]string, error) {
+func (p *Podman) Images(ctx context.Context, imgs Images) ([]string, error) {
 	// List images
-	imageSummary, err := iList(ctx, nil, nil)
+	imageSummary, err := imgs(ctx, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -93,8 +78,8 @@ func (p *Podman) Images(ctx context.Context, iList ImagesList) ([]string, error)
 }
 
 // Volumes return the list of the current volumnes in the system
-func (p *Podman) Volumes(ctx context.Context, vList VolumesList) ([]string, error) {
-	volumeList, err := vList(ctx, nil)
+func (p *Podman) Volumes(ctx context.Context, v Volumes) ([]string, error) {
+	volumeList, err := v(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
