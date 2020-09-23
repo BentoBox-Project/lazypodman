@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/containers/libpod/v2/pkg/bindings"
-	"github.com/containers/libpod/v2/pkg/domain/entities"
 )
 
 // Podman struct
@@ -13,20 +12,6 @@ type Podman struct {
 	// the name of the docker-compose file, if any
 	ComposeFile string
 }
-
-// Internal functions types used to mock the real ones from podman/bindings package
-
-// PodsList is the function type with the same signature of pods.List
-type PodsList func(ctx context.Context, filters map[string][]string) ([]*entities.ListPodsReport, error)
-
-// ContainersList is the function type with the same signature of containers.List
-type ContainersList func(ctx context.Context, filters map[string][]string, all *bool, last *int, pod, size, sync *bool) ([]entities.ListContainer, error)
-
-// ImagesList is the function type with the same signature of images.List
-type ImagesList func(ctx context.Context, all *bool, filters map[string][]string) ([]*entities.ImageSummary, error)
-
-// VolumesList is the function type with the same signature of volumes.List
-type VolumesList func(ctx context.Context, filters map[string][]string) ([]*entities.VolumeListReport, error)
 
 // APIConn returns an Podman V2 API connection as a context.Context
 func APIConn() (context.Context, error) {
