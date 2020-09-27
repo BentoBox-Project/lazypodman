@@ -34,9 +34,9 @@ type SentinelErrors struct {
 func (gui *Gui) GenerateSentinelErrors() {
 	gui.Errors = SentinelErrors{
 		ErrSubProcess:   errors.New("running subprocess"),
-		ErrNoContainers: errors.New("No containers"),
-		ErrNoImages:     errors.New("No Images"),
-		ErrNoVolumes:    errors.New("No volumes"),
+		ErrNoContainers: errors.New("no containers"),
+		ErrNoImages:     errors.New("no Images"),
+		ErrNoVolumes:    errors.New("no volumes"),
 	}
 }
 
