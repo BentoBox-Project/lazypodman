@@ -5,28 +5,9 @@ import (
 	"github.com/jesseduffield/gocui"
 )
 
-func (gui *Gui) popPreviousView() string {
-	if gui.State.PreviousViews.Len() > 0 {
-		return gui.State.PreviousViews.Pop().(string)
-	}
-
-	return ""
-}
-
-func (gui *Gui) peekPreviousView() string {
-	if gui.State.PreviousViews.Len() > 0 {
-		return gui.State.PreviousViews.Peek().(string)
-	}
-
-	return ""
-}
-
-func (gui *Gui) pushPreviousView(name string) {
-	gui.State.PreviousViews.Push(name)
-}
-
-func (gui *Gui) isPopupPanel(viewName string) bool {
-	return viewName == "confirmation" || viewName == "menu"
+func (gui *Gui) currentViewName() string {
+	currentView := gui.g.CurrentView()
+	return currentView.Name()
 }
 
 // if the cursor down past the last item, move it to the last line
@@ -67,7 +48,26 @@ func (gui *Gui) focusPoint(selectedX int, selectedY int, lineCount int, v *gocui
 	return nil
 }
 
-func (gui *Gui) currentViewName() string {
-	currentView := gui.g.CurrentView()
-	return currentView.Name()
+func (gui *Gui) isPopupPanel(viewName string) bool {
+	return viewName == "confirmation" || viewName == "menu"
+}
+
+func (gui *Gui) peekPreviousView() string {
+	if gui.State.PreviousViews.Len() > 0 {
+		return gui.State.PreviousViews.Peek().(string)
+	}
+
+	return ""
+}
+
+func (gui *Gui) popPreviousView() string {
+	if gui.State.PreviousViews.Len() > 0 {
+		return gui.State.PreviousViews.Pop().(string)
+	}
+
+	return ""
+}
+
+func (gui *Gui) pushPreviousView(name string) {
+	gui.State.PreviousViews.Push(name)
 }

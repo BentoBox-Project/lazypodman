@@ -4,6 +4,33 @@ import (
 	"github.com/jesseduffield/gocui"
 )
 
+type listViewState struct {
+	selectedLine int
+	lineCount    int
+}
+
+func (gui *Gui) focusPointInView(view *gocui.View) error {
+	if view == nil {
+		return nil
+	}
+
+	listViews := map[string]listViewState{
+		"containers": {selectedLine: gui.State.Panels.Containers.SelectedLine, lineCount: 4},
+		"images":     {selectedLine: gui.State.Panels.Images.SelectedLine, lineCount: 4},
+		"volumes":    {selectedLine: gui.State.Panels.Volumes.SelectedLine, lineCount: 4},
+		"services":   {selectedLine: gui.State.Panels.Services.SelectedLine, lineCount: 4},
+		"menu":       {selectedLine: gui.State.Panels.Menu.SelectedLine, lineCount: gui.State.MenuItemCount},
+	}
+
+	if state, ok := listViews[view.Name()]; ok {
+		if err := gui.focusPoint(0, state.selectedLine, state.lineCount, view); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // getFocusLayout returns a manager function for when view gain and lose focus
 func (gui *Gui) getFocusLayout() func(g *gocui.Gui) error {
 	var previousView *gocui.View
@@ -24,45 +51,6 @@ func (gui *Gui) getFocusLayout() func(g *gocui.Gui) error {
 		}
 		return nil
 	}
-}
-
-func (gui *Gui) onFocusChange() error {
-	currentView := gui.g.CurrentView()
-	for _, view := range gui.g.Views() {
-		view.Highlight = view == currentView && view.Name() != "main"
-	}
-	return nil
-}
-
-func (gui *Gui) onFocusLost(v *gocui.View, newView *gocui.View) error {
-	if v == nil {
-		return nil
-	}
-
-	if !gui.isPopupPanel(newView.Name()) {
-		v.ParentView = nil
-	}
-
-	// refocusing because in responsive mode (when the window is very short) we want to ensure that after the view size changes we can still see the last selected item
-	if err := gui.focusPointInView(v); err != nil {
-		return err
-	}
-
-	gui.Log.Info(v.Name() + " focus lost")
-	return nil
-}
-
-func (gui *Gui) onFocus(v *gocui.View) error {
-	if v == nil {
-		return nil
-	}
-
-	if err := gui.focusPointInView(v); err != nil {
-		return err
-	}
-
-	gui.Log.Info(v.Name() + " focus gained")
-	return nil
 }
 
 func (gui *Gui) layout(g *gocui.Gui) error {
@@ -196,29 +184,41 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 	return nil
 }
 
-type listViewState struct {
-	selectedLine int
-	lineCount    int
-}
-
-func (gui *Gui) focusPointInView(view *gocui.View) error {
-	if view == nil {
+func (gui *Gui) onFocus(v *gocui.View) error {
+	if v == nil {
 		return nil
 	}
 
-	listViews := map[string]listViewState{
-		"containers": {selectedLine: gui.State.Panels.Containers.SelectedLine, lineCount: 4},
-		"images":     {selectedLine: gui.State.Panels.Images.SelectedLine, lineCount: 4},
-		"volumes":    {selectedLine: gui.State.Panels.Volumes.SelectedLine, lineCount: 4},
-		"services":   {selectedLine: gui.State.Panels.Services.SelectedLine, lineCount: 4},
-		"menu":       {selectedLine: gui.State.Panels.Menu.SelectedLine, lineCount: gui.State.MenuItemCount},
+	if err := gui.focusPointInView(v); err != nil {
+		return err
 	}
 
-	if state, ok := listViews[view.Name()]; ok {
-		if err := gui.focusPoint(0, state.selectedLine, state.lineCount, view); err != nil {
-			return err
-		}
+	gui.Log.Info(v.Name() + " focus gained")
+	return nil
+}
+
+func (gui *Gui) onFocusChange() error {
+	currentView := gui.g.CurrentView()
+	for _, view := range gui.g.Views() {
+		view.Highlight = view == currentView && view.Name() != "main"
+	}
+	return nil
+}
+
+func (gui *Gui) onFocusLost(v *gocui.View, newView *gocui.View) error {
+	if v == nil {
+		return nil
 	}
 
+	if !gui.isPopupPanel(newView.Name()) {
+		v.ParentView = nil
+	}
+
+	// refocusing because in responsive mode (when the window is very short) we want to ensure that after the view size changes we can still see the last selected item
+	if err := gui.focusPointInView(v); err != nil {
+		return err
+	}
+
+	gui.Log.Info(v.Name() + " focus lost")
 	return nil
 }
