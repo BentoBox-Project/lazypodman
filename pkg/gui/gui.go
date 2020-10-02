@@ -2,7 +2,6 @@ package gui
 
 import (
 	"errors"
-	"os"
 	"os/exec"
 
 	"github.com/danvergara/lazypodman/pkg/commands"
@@ -151,16 +150,15 @@ func (gui *Gui) Run() error {
 
 	gui.g = g
 
-	g.SetManager(gocui.ManagerFunc(gui.layout), gocui.ManagerFunc(gui.getFocusLayout()))
-
-	if err := g.SetKeybinding("", []string{}, gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
-		// log.Panicln(err)
-		os.Exit(0)
-		return nil
+	gui.g.SetManager(gocui.ManagerFunc(gui.layout), gocui.ManagerFunc(gui.getFocusLayout()))
+	if err := gui.g.SetKeybinding("", nil, gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
+		return err
 	}
 
-	err = g.MainLoop()
-	return err
+	if err := gui.g.MainLoop(); err != nil && err != gocui.ErrQuit {
+		return err
+	}
+	return nil
 }
 
 func quit(g *gocui.Gui, v *gocui.View) error {
