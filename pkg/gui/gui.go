@@ -3,6 +3,7 @@ package gui
 import (
 	"errors"
 	"os/exec"
+	"time"
 
 	"github.com/danvergara/lazypodman/pkg/commands"
 	"github.com/danvergara/lazypodman/pkg/podman"
@@ -155,10 +156,31 @@ func (gui *Gui) Run() error {
 		return err
 	}
 
+	go func() {
+		gui.goEvery(time.Microsecond*30, gui.refreshContainersView)
+	}()
+
 	if err := gui.g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		return err
 	}
 	return nil
+}
+
+func (gui *Gui) goEvery(interval time.Duration, function func() error) {
+	currentSessionIndex := gui.State.SessionIndex
+
+	// time.Tick doesn't run inmediately so we'll do that here
+	_ = function()
+	go func() {
+		ticker := time.NewTicker(interval)
+		defer ticker.Stop()
+		for range ticker.C {
+			if gui.State.SessionIndex > currentSessionIndex {
+				return
+			}
+			_ = function()
+		}
+	}()
 }
 
 func quit(g *gocui.Gui, v *gocui.View) error {
