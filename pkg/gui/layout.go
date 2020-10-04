@@ -136,7 +136,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		if err.Error() != "unknown view" {
 			return err
 		}
-		v.Title = "Pod prototype"
+		v.Title = "Project"
 		v.FgColor = gocui.ColorDefault
 	}
 

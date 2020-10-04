@@ -27,8 +27,9 @@ func (gui *Gui) refreshPodsView() error {
 
 	gui.g.Update(func(g *gocui.Gui) error {
 		v.Clear()
-		fmt.Fprintf(v, strings.Join(pods, "\n"))
+		fmt.Fprint(v, strings.Join(pods, "\n"))
 		return nil
 	})
+
 	return nil
 }

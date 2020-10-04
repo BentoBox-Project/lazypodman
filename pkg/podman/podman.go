@@ -69,12 +69,12 @@ func (p *Podman) Images(ctx context.Context, imgs Images) ([]string, error) {
 		return nil, err
 	}
 
-	var names []string
+	var images []string
 	for _, i := range imageSummary {
-		names = append(names, i.RepoTags...)
+		images = append(images, i.RepoTags...)
 	}
 
-	return names, nil
+	return images, nil
 }
 
 // Volumes return the list of the current volumnes in the system
