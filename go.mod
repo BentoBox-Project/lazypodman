@@ -3,7 +3,7 @@ module github.com/danvergara/lazypodman
 go 1.14
 
 require (
-	github.com/containers/libpod/v2 v2.0.4
+	github.com/containers/podman/v2 v2.1.1
 	github.com/fatih/color v1.7.0
 	github.com/go-errors/errors v1.1.1
 	github.com/golang-collections/collections v0.0.0-20130729185459-604e922904d3
