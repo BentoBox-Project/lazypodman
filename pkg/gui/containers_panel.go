@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/containers/libpod/v2/pkg/bindings/containers"
+	"github.com/containers/podman/v2/pkg/bindings/containers"
 	"github.com/danvergara/lazypodman/pkg/podman"
 	"github.com/jesseduffield/gocui"
 )
@@ -30,5 +30,6 @@ func (gui *Gui) refreshContainersView() error {
 		fmt.Fprint(v, strings.Join(services, "\n"))
 		return nil
 	})
+
 	return nil
 }

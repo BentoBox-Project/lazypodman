@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	"github.com/containers/libpod/v2/pkg/bindings"
+	"github.com/containers/podman/v2/pkg/bindings"
 )
 
 // Podman struct
@@ -48,7 +48,7 @@ func (p *Podman) Pods(ctx context.Context, pods Pods) ([]string, error) {
 func (p *Podman) Containers(ctx context.Context, crs Containers) ([]string, error) {
 	var latestContainers = 10
 
-	containerList, err := crs(ctx, nil, nil, &latestContainers, nil, nil, nil)
+	containerList, err := crs(ctx, nil, nil, &latestContainers, nil, nil)
 	if err != nil {
 		return nil, err
 	}

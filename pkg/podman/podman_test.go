@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/containers/libpod/v2/pkg/domain/entities"
+	"github.com/containers/podman/v2/pkg/domain/entities"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,7 +26,7 @@ func mockEmptyPodList(ctx context.Context, filter map[string][]string) ([]*entit
 	return reports, nil
 }
 
-func mockContainersList(ctx context.Context, filters map[string][]string, all *bool, last *int, pod, size, sync *bool) ([]entities.ListContainer, error) {
+func mockContainersList(ctx context.Context, filters map[string][]string, all *bool, last *int, size, sync *bool) ([]entities.ListContainer, error) {
 	containers := []entities.ListContainer{
 		{
 			Names: []string{"web"},
@@ -38,7 +38,7 @@ func mockContainersList(ctx context.Context, filters map[string][]string, all *b
 	return containers, nil
 }
 
-func mockEmptyContainersList(ctx context.Context, filters map[string][]string, all *bool, last *int, pod, size, sync *bool) ([]entities.ListContainer, error) {
+func mockEmptyContainersList(ctx context.Context, filters map[string][]string, all *bool, last *int, size, sync *bool) ([]entities.ListContainer, error) {
 	containers := make([]entities.ListContainer, 0)
 	return containers, nil
 }
