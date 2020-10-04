@@ -160,6 +160,7 @@ func (gui *Gui) Run() error {
 		gui.goEvery(time.Microsecond*30, gui.refreshContainersView)
 		gui.goEvery(time.Microsecond*30, gui.refreshPodsView)
 		gui.goEvery(time.Microsecond*30, gui.refreshImagesView)
+		gui.goEvery(time.Microsecond*30, gui.refreshVolumesView)
 	}()
 
 	if err := gui.g.MainLoop(); err != nil && err != gocui.ErrQuit {
