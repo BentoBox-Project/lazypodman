@@ -25,6 +25,9 @@ func NewApp(config *config.Config, composeFile string) (*App, error) {
 
 // Run the application
 func (app *App) Run() error {
-	err := app.Gui.RunWithSubprocesses()
-	return err
+	if err := app.Gui.Run(); err != nil {
+		return err
+	}
+
+	return nil
 }
