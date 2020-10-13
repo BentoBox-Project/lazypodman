@@ -24,16 +24,14 @@ type Gui struct {
 }
 
 // NewGui returns a new Gui object
-func NewGui(composeFile string) *Gui {
+func NewGui() *Gui {
 	gui := &Gui{
-		Grid:       ui.NewGrid(),
-		Pods:       widgets.NewList(),
-		Containers: widgets.NewList(),
-		Images:     widgets.NewList(),
-		Volumes:    widgets.NewList(),
-		PodmanBinding: &podman.Podman{
-			ComposeFile: composeFile,
-		},
+		Grid:          ui.NewGrid(),
+		Pods:          widgets.NewList(),
+		Containers:    widgets.NewList(),
+		Images:        widgets.NewList(),
+		Volumes:       widgets.NewList(),
+		PodmanBinding: &podman.Podman{},
 	}
 	return gui
 }

@@ -15,10 +15,10 @@ type App struct {
 }
 
 // NewApp boostrap a new application
-func NewApp(config *config.Config, composeFile string) (*App, error) {
+func NewApp(config *config.Config) (*App, error) {
 	app := &App{Config: config}
 	app.Log = logger.NewLogger(config)
-	app.Gui = gui.NewGui(composeFile)
+	app.Gui = gui.NewGui()
 	return app, nil
 
 }
