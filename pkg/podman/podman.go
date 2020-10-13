@@ -5,12 +5,15 @@ import (
 	"os"
 
 	"github.com/containers/podman/v2/pkg/bindings"
+	"github.com/containers/podman/v2/pkg/bindings/pods"
 )
 
 // Podman struct
 type Podman struct {
 	// the name of the docker-compose file, if any
 	ComposeFile string
+	// the pod of interest to analyze
+	Pod string
 }
 
 // APIConn returns an Podman V2 API connection as a context.Context
@@ -41,19 +44,40 @@ func (p *Podman) Pods(ctx context.Context, pods Pods) ([]string, error) {
 		podNames = append(podNames, pod.Name)
 	}
 
+	if p.Pod != "" {
+		for _, pod := range podNames {
+			if p.Pod == pod {
+				return []string{p.Pod}, nil
+			}
+		}
+	}
+
 	return podNames, nil
 }
 
 // Containers retuns a slice of strings with the names of the active containers or those listted on a docker-compose file
 func (p *Podman) Containers(ctx context.Context, crs Containers) ([]string, error) {
 	var latestContainers = 10
+	var containerNames []string
+
+	if p.Pod != "" {
+		pod, err := pods.Inspect(ctx, p.Pod)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, c := range pod.Containers {
+			containerNames = append(containerNames, c.Name)
+		}
+
+		return containerNames, nil
+	}
 
 	containerList, err := crs(ctx, nil, nil, &latestContainers, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var containerNames []string
 	for _, c := range containerList {
 		containerNames = append(containerNames, c.Names[0])
 	}
