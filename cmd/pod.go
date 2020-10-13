@@ -12,10 +12,13 @@ import (
 )
 
 var (
-	rootCmd = &cobra.Command{
-		Use:   "lazypodman",
-		Short: "Lazypodman is a monitoring tool for podman pods",
-		Long:  "A flexible monitoring tool for pods powered by the podman V2 bindings",
+	// flags
+	name string
+
+	podCmd = &cobra.Command{
+		Use:   "pod",
+		Short: "Handle and display all the information related to a given pod",
+		Long:  "Handler and display all the information related to a given pod: $ lzd pod -n awesome_pod",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			projectDir, err := os.Getwd()
 			if err != nil {
@@ -29,6 +32,7 @@ var (
 			}
 
 			app, err := app.NewApp(appConfig)
+			app.Gui.PodmanBinding.Pod = name
 			if err == nil {
 				err = app.Run()
 			}
@@ -39,20 +43,11 @@ var (
 				app.Log.Error(stackTrace)
 				log.Fatal(fmt.Sprintf("%s\n", err.Error()))
 			}
-
 			return nil
 		},
 	}
 )
 
 func init() {
-	rootCmd.AddCommand(podCmd)
-}
-
-// Execute main function of rootCmd
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+	podCmd.Flags().StringVarP(&name, "name", "n", "", "the name of the pod of interest")
 }
