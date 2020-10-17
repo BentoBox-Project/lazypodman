@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/containers/podman/v2/pkg/bindings"
-	"github.com/containers/podman/v2/pkg/bindings/pods"
 )
 
 // Podman struct
@@ -32,8 +31,8 @@ func APIConn() (context.Context, error) {
 }
 
 // Pods returns a slice of strings with the name of the active pods
-func (p *Podman) Pods(ctx context.Context, pods Pods) ([]string, error) {
-	podList, err := pods(ctx, nil)
+func (p *Podman) Pods(ctx context.Context, b Binder) ([]string, error) {
+	podList, err := b.Pods(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -56,12 +55,12 @@ func (p *Podman) Pods(ctx context.Context, pods Pods) ([]string, error) {
 }
 
 // Containers retuns a slice of strings with the names of the active containers or those listted on a docker-compose file
-func (p *Podman) Containers(ctx context.Context, crs Containers) ([]string, error) {
+func (p *Podman) Containers(ctx context.Context, b Binder) ([]string, error) {
 	var latestContainers = 10
 	var containerNames []string
 
 	if p.Pod != "" {
-		pod, err := pods.Inspect(ctx, p.Pod)
+		pod, err := b.Pod(ctx, p.Pod)
 		if err != nil {
 			return nil, err
 		}
@@ -73,7 +72,7 @@ func (p *Podman) Containers(ctx context.Context, crs Containers) ([]string, erro
 		return containerNames, nil
 	}
 
-	containerList, err := crs(ctx, nil, nil, &latestContainers, nil, nil)
+	containerList, err := b.Containers(ctx, nil, nil, &latestContainers, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -86,9 +85,9 @@ func (p *Podman) Containers(ctx context.Context, crs Containers) ([]string, erro
 }
 
 // Images return the list of the current podman images in the system
-func (p *Podman) Images(ctx context.Context, imgs Images) ([]string, error) {
+func (p *Podman) Images(ctx context.Context, b Binder) ([]string, error) {
 	// List images
-	imageSummary, err := imgs(ctx, nil, nil)
+	imageSummary, err := b.Images(ctx, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -102,8 +101,8 @@ func (p *Podman) Images(ctx context.Context, imgs Images) ([]string, error) {
 }
 
 // Volumes return the list of the current volumnes in the system
-func (p *Podman) Volumes(ctx context.Context, v Volumes) ([]string, error) {
-	volumeList, err := v(ctx, nil)
+func (p *Podman) Volumes(ctx context.Context, b Binder) ([]string, error) {
+	volumeList, err := b.Volumes(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
