@@ -3,10 +3,6 @@ package gui
 import (
 	"time"
 
-	"github.com/containers/podman/v2/pkg/bindings/containers"
-	"github.com/containers/podman/v2/pkg/bindings/images"
-	"github.com/containers/podman/v2/pkg/bindings/pods"
-	"github.com/containers/podman/v2/pkg/bindings/volumes"
 	"github.com/danvergara/lazypodman/pkg/podman"
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
@@ -43,24 +39,26 @@ func (g *Gui) render() {
 		logrus.Error(err)
 	}
 
-	podNames, err := g.PodmanBinding.Pods(ctx, pods.List)
+	b := podman.Bindings{}
+
+	podNames, err := g.PodmanBinding.Pods(ctx, &b)
 
 	if err != nil {
 		logrus.Error(err)
 	}
 
-	containerNames, err := g.PodmanBinding.Containers(ctx, containers.List)
+	containerNames, err := g.PodmanBinding.Containers(ctx, &b)
 
 	if err != nil {
 		logrus.Error(err)
 	}
 
-	imageNames, err := g.PodmanBinding.Images(ctx, images.List)
+	imageNames, err := g.PodmanBinding.Images(ctx, &b)
 	if err != nil {
 		logrus.Error(err)
 	}
 
-	vNames, err := g.PodmanBinding.Volumes(ctx, volumes.List)
+	vNames, err := g.PodmanBinding.Volumes(ctx, &b)
 	if err != nil {
 		logrus.Error(err)
 	}
