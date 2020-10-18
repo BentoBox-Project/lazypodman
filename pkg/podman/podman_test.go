@@ -8,6 +8,36 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var (
+	PodsMock       func(ctx context.Context, filters map[string][]string) ([]*entities.ListPodsReport, error)
+	ContainersMock func(ctx context.Context, filters map[string][]string, all *bool, last *int, size, sync *bool) ([]entities.ListContainer, error)
+	ImagesMock     func(ctx context.Context, all *bool, filters map[string][]string) ([]*entities.ImageSummary, error)
+	VolumesMock    func(ctx context.Context, filters map[string][]string) ([]*entities.VolumeListReport, error)
+	PodMock        func(ctx context.Context, nameOrID string) (*entities.PodInspectReport, error)
+)
+
+type BinderMock struct{}
+
+func (b *BinderMock) Pods(ctx context.Context, filters map[string][]string) ([]*entities.ListPodsReport, error) {
+	return PodsMock(ctx, filters)
+}
+
+func (b *BinderMock) Containers(ctx context.Context, filters map[string][]string, all *bool, last *int, size, sync *bool) ([]entities.ListContainer, error) {
+	return ContainersMock(ctx, filters, all, last, size, sync)
+}
+
+func (b *BinderMock) Images(ctx context.Context, all *bool, filters map[string][]string) ([]*entities.ImageSummary, error) {
+	return ImagesMock(ctx, all, filters)
+}
+
+func (b *BinderMock) Volumes(ctx context.Context, filters map[string][]string) ([]*entities.VolumeListReport, error) {
+	return VolumesMock(ctx, filters)
+}
+
+func (b *BinderMock) Pod(ctx context.Context, nameOrID string) (*entities.PodInspectReport, error) {
+	return PodMock(ctx, nameOrID)
+}
+
 func mockPodList(ctx context.Context, filters map[string][]string) ([]*entities.ListPodsReport, error) {
 	reports := []*entities.ListPodsReport{
 		{
@@ -89,9 +119,10 @@ func mockEmptyVolumelist(ctx context.Context, filters map[string][]string) ([]*e
 func TestPodList(t *testing.T) {
 	ctx := context.Background()
 
-	podmanObj := Podman{}
-
-	pods, err := podmanObj.Pods(ctx, mockPodList)
+	p := Podman{}
+	PodsMock = mockPodList
+	bindings := BinderMock{}
+	pods, err := p.Pods(ctx, &bindings)
 	assert.NoError(t, err)
 	assert.Equal(t, "application_web", pods[0])
 }
@@ -99,9 +130,10 @@ func TestPodList(t *testing.T) {
 func TestEmptyPodList(t *testing.T) {
 	ctx := context.Background()
 
-	podmanObj := Podman{}
-
-	pods, err := podmanObj.Pods(ctx, mockEmptyPodList)
+	p := Podman{}
+	PodsMock = mockEmptyPodList
+	bindings := BinderMock{}
+	pods, err := p.Pods(ctx, &bindings)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 0, len(pods))
@@ -110,9 +142,10 @@ func TestEmptyPodList(t *testing.T) {
 func TestContainerList(t *testing.T) {
 	ctx := context.Background()
 
-	podmanObj := Podman{}
-
-	containers, err := podmanObj.Containers(ctx, mockContainersList)
+	p := Podman{}
+	ContainersMock = mockContainersList
+	bindings := BinderMock{}
+	containers, err := p.Containers(ctx, &bindings)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(containers))
@@ -122,9 +155,10 @@ func TestContainerList(t *testing.T) {
 func TestEmptyContainersList(t *testing.T) {
 	ctx := context.Background()
 
-	podmanObj := Podman{}
-
-	containers, err := podmanObj.Containers(ctx, mockEmptyContainersList)
+	p := Podman{}
+	ContainersMock = mockEmptyContainersList
+	bindings := BinderMock{}
+	containers, err := p.Containers(ctx, &bindings)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 0, len(containers))
@@ -133,9 +167,10 @@ func TestEmptyContainersList(t *testing.T) {
 func TestImageList(t *testing.T) {
 	ctx := context.Background()
 
-	podmanObj := Podman{}
-
-	images, err := podmanObj.Images(ctx, mockImagesList)
+	p := Podman{}
+	ImagesMock = mockImagesList
+	bindings := BinderMock{}
+	images, err := p.Images(ctx, &bindings)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 3, len(images))
@@ -145,9 +180,10 @@ func TestImageList(t *testing.T) {
 func TestEmptyImageList(t *testing.T) {
 	ctx := context.Background()
 
-	podmanObj := Podman{}
-
-	images, err := podmanObj.Images(ctx, mockEmptyImagesList)
+	p := Podman{}
+	ImagesMock = mockEmptyImagesList
+	bindings := BinderMock{}
+	images, err := p.Images(ctx, &bindings)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 0, len(images))
@@ -156,9 +192,10 @@ func TestEmptyImageList(t *testing.T) {
 func TestVolumeList(t *testing.T) {
 	ctx := context.Background()
 
-	podmanObj := Podman{}
-
-	volumes, err := podmanObj.Volumes(ctx, mockVolumeList)
+	p := Podman{}
+	VolumesMock = mockVolumeList
+	bindings := BinderMock{}
+	volumes, err := p.Volumes(ctx, &bindings)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(volumes))
@@ -168,9 +205,10 @@ func TestVolumeList(t *testing.T) {
 func TestEmptyVolumeList(t *testing.T) {
 	ctx := context.Background()
 
-	podmanObj := Podman{}
-
-	volumes, err := podmanObj.Volumes(ctx, mockEmptyVolumelist)
+	p := Podman{}
+	VolumesMock = mockEmptyVolumelist
+	bindings := BinderMock{}
+	volumes, err := p.Volumes(ctx, &bindings)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 0, len(volumes))
